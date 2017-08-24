@@ -1,5 +1,4 @@
 import { storiesOf } from '@storybook/react';
-import { messageLogger } from '../.storybook/msg-logger';
 import * as React from 'react';
 import withRemoteRender, { RemoteRenderComponent } from '../src/components/withRemoteRender';
 import { TestScenario } from './utils';
