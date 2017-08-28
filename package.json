@@ -1,6 +1,6 @@
 {
   "name": "react-remote-render",
-  "version": "0.0.2",
+  "version": "0.0.3-0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Mariano Cortesi <mcortesi@gmail.com>",
@@ -10,7 +10,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "prepublish": "yarn deploy-storybook && yarn build",
+    "prepublish": "yarn build",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "deploy-storybook": "storybook-to-ghpages"
   },

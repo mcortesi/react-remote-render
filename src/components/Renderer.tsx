@@ -29,13 +29,13 @@ export default class Renderer extends React.PureComponent<RendererProps, Rendere
     this.handler = {
       onComponentMount: (id: number, name: string, props: Props) => {
         this.setState((prevState) => ({
-          components: prevState.instances.concat([{ id, name, props }])
+          instances: prevState.instances.concat([{ id, name, props }])
         }));
       },
 
       onUpdateComponent: (id: number, props: Props) => {
         this.setState((prevState) => ({
-          components: prevState.instances.map(cState => {
+          instances: prevState.instances.map(cState => {
             if (cState.id === id) {
               return { id, name: cState.name, props };
             } else {
@@ -47,7 +47,7 @@ export default class Renderer extends React.PureComponent<RendererProps, Rendere
 
       onUnmountComponent: (id: number) => {
         this.setState((prevState) => ({
-          components: prevState.instances.filter(cState => cState.id === id)
+          instances: prevState.instances.filter(cState => cState.id === id)
         }));
       }
     };
