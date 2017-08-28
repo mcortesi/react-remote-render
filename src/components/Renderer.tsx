@@ -47,7 +47,7 @@ export default class Renderer extends React.PureComponent<RendererProps, Rendere
 
       onUnmountComponent: (id: number) => {
         this.setState((prevState) => ({
-          instances: prevState.instances.filter(cState => cState.id === id)
+          instances: prevState.instances.filter(cState => cState.id !== id)
         }));
       }
     };

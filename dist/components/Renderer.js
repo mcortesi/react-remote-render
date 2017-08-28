@@ -27,12 +27,12 @@ var Renderer = (function (_super) {
         _this.handler = {
             onComponentMount: function (id, name, props) {
                 _this.setState(function (prevState) { return ({
-                    components: prevState.instances.concat([{ id: id, name: name, props: props }])
+                    instances: prevState.instances.concat([{ id: id, name: name, props: props }])
                 }); });
             },
             onUpdateComponent: function (id, props) {
                 _this.setState(function (prevState) { return ({
-                    components: prevState.instances.map(function (cState) {
+                    instances: prevState.instances.map(function (cState) {
                         if (cState.id === id) {
                             return { id: id, name: cState.name, props: props };
                         }
@@ -44,7 +44,7 @@ var Renderer = (function (_super) {
             },
             onUnmountComponent: function (id) {
                 _this.setState(function (prevState) { return ({
-                    components: prevState.instances.filter(function (cState) { return cState.id === id; })
+                    instances: prevState.instances.filter(function (cState) { return cState.id === id; })
                 }); });
             }
         };
