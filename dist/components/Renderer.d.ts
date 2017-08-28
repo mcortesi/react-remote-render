@@ -13,13 +13,13 @@ export interface RendererProps {
     server: RemoteRenderServer;
 }
 export interface RendererState {
-    components: ComponentState[];
+    instances: ComponentState[];
 }
 export default class Renderer extends React.PureComponent<RendererProps, RendererState> {
     state: RendererState;
-    private mappings;
-    private proxyHandler;
+    private handler;
     constructor(props: RendererProps);
     componentWillUnmount(): void;
+    getComponent(name: any): RemoteRenderComponent<any> | undefined;
     render(): JSX.Element;
 }

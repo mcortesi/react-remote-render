@@ -16,32 +16,26 @@ export interface RendererProps {
 }
 
 export interface RendererState {
-  components: ComponentState[]
+  instances: ComponentState[]
 }
 
 export default class Renderer extends React.PureComponent<RendererProps, RendererState> {
-  state: RendererState = { components: [] }
-  private mappings: ObjMap<React.ComponentClass>;
-  private proxyHandler: RemoteRenderHandler;
+  state: RendererState = { instances: [] }
+  private handler: RemoteRenderHandler;
 
   constructor(props: RendererProps) {
     super(props);
 
-    this.mappings = props.components.reduce((acc, component) => {
-      acc[component.externalName] = component;
-      return acc;
-    }, {});
-
-    this.proxyHandler = {
+    this.handler = {
       onComponentMount: (id: number, name: string, props: Props) => {
         this.setState((prevState) => ({
-          components: prevState.components.concat([{ id, name, props }])
+          components: prevState.instances.concat([{ id, name, props }])
         }));
       },
 
       onUpdateComponent: (id: number, props: Props) => {
         this.setState((prevState) => ({
-          components: prevState.components.map(cState => {
+          components: prevState.instances.map(cState => {
             if (cState.id === id) {
               return { id, name: cState.name, props };
             } else {
@@ -53,26 +47,34 @@ export default class Renderer extends React.PureComponent<RendererProps, Rendere
 
       onUnmountComponent: (id: number) => {
         this.setState((prevState) => ({
-          components: prevState.components.filter(cState => cState.id === id)
+          components: prevState.instances.filter(cState => cState.id === id)
         }));
       }
     };
 
 
-    this.props.server.registerHandler(this.proxyHandler);
+    this.props.server.registerHandler(this.handler);
   }
 
   componentWillUnmount() {
-    this.props.server.unregisterHandler(this.proxyHandler);
+    this.props.server.unregisterHandler(this.handler);
+  }
+
+  getComponent(name) {
+    return this.props.components.find(c => c.externalName === name);
   }
 
   render() {
     return (
       <div>
-        {this.state.components.map(({ id, name, props }) => {
-          const ExternalizedComponent = this.mappings[name] as RemoteRenderComponent<any>;
-          const Component = ExternalizedComponent.WrappedComponent;
-          return <Component key={id} {...ExternalizedComponent.deserializeProps(props)} />
+        {this.state.instances.map(({ id, name, props }) => {
+          const ExternalizedComponent = this.getComponent(name) as RemoteRenderComponent<any>;
+          if (ExternalizedComponent) {
+            const Component = ExternalizedComponent.WrappedComponent;
+            return <Component key={id} {...ExternalizedComponent.deserializeProps(props)} />
+          } else {
+            return null;
+          }
         })}
       </div>
     );
