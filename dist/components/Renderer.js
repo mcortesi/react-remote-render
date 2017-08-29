@@ -44,7 +44,7 @@ var Renderer = (function (_super) {
             },
             onUnmountComponent: function (id) {
                 _this.setState(function (prevState) { return ({
-                    instances: prevState.instances.filter(function (cState) { return cState.id === id; })
+                    instances: prevState.instances.filter(function (cState) { return cState.id !== id; })
                 }); });
             }
         };

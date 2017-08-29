@@ -1,7 +1,7 @@
 import { RemoteRenderClient, RemoteRenderServer, RemoteRenderHandler } from '../types/service';
 import { Props } from '../types/base';
 
-export default class DummyRemoteProxy implements RemoteRenderClient, RemoteRenderServer {
+export default class DummyRemoteRenderClient implements RemoteRenderClient, RemoteRenderServer {
   private handlers: RemoteRenderHandler[] = [];
   private nextId = 0;
 

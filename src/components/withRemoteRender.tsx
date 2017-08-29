@@ -86,27 +86,27 @@ export default function withRemoteRender<OProps extends {}>(options: Options<OPr
 
 
       static contextTypes = {
-        remoteProxy: PropTypes.object
+        client: PropTypes.object
       }
 
       private id: number;
-      context: { remoteProxy?: RemoteRenderClient };
+      context: { client?: RemoteRenderClient };
 
       componentDidMount() {
-        if (this.context.remoteProxy) {
-          this.id = this.context.remoteProxy.mountComponent(externalName, serializer(this.props));
+        if (this.context.client) {
+          this.id = this.context.client.mountComponent(externalName, serializer(this.props));
         }
       }
 
       componentDidUpdate() {
-        if (this.context.remoteProxy) {
-          this.context.remoteProxy.updateComponent(this.id, serializer(this.props));
+        if (this.context.client) {
+          this.context.client.updateComponent(this.id, serializer(this.props));
         }
       }
 
       componentWillUnmount() {
-        if (this.context.remoteProxy) {
-          this.context.remoteProxy.unmountComponent(this.id);
+        if (this.context.client) {
+          this.context.client.unmountComponent(this.id);
         }
       }
 

@@ -41,7 +41,7 @@ export class TestScenario extends React.Component<TestScenarioProps> {
     return (
       <div>
         <Section title="In your APP" >
-          <RemoteRenderProvider remoteProxy={this.state.proxy}>
+          <RemoteRenderProvider client={this.state.proxy}>
             {this.props.children}
           </RemoteRenderProvider>
         </Section>

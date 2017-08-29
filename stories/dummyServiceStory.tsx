@@ -26,12 +26,12 @@ class DummyProxyTest extends React.Component<DummyProxyTestProps> {
       <div>
         <section>
           <h4>The main flow (provider)</h4>
-          <RemoteRenderProvider remoteProxy={this.state.proxy}>
+          <RemoteRenderProvider client={this.state.proxy}>
             {this.props.children}
           </RemoteRenderProvider>
         </section>
         <section>
-          <h4>The RemoteProxy Renderer</h4>
+          <h4>The Renderer</h4>
           <Renderer
             server={this.state.proxy}
             components={this.props.externalizedComponents}

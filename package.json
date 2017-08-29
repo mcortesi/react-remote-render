@@ -1,6 +1,6 @@
 {
   "name": "react-remote-render",
-  "version": "0.0.3-1",
+  "version": "0.0.3-2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Mariano Cortesi <mcortesi@gmail.com>",
