@@ -9,7 +9,7 @@ export function fromPairs<A>(arr: Array<[string, A]>): ObjMap<A> {
 
 export function mapObject<A, B, C extends ObjMap<A>>(
   obj: C,
-  mapper: (val: A, key: string) => B
+  mapper: (val: A, key: keyof C) => B
 ): Shape<C, B> {
   return fromPairs(
     Object.keys(obj).map(

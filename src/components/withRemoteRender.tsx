@@ -68,7 +68,7 @@ export default function withRemoteRender<OProps extends {}>(
   const deserializer =
     options.customSerializers == null
       ? p => p
-      : props =>
+      : (props: OProps) =>
           mapObject(props, (value, key) => {
             if (options.customSerializers![key]) {
               return options.customSerializers![key]!.deserialize(value);
@@ -94,8 +94,8 @@ export default function withRemoteRender<OProps extends {}>(
         client: PropTypes.object
       };
 
-      private id: number;
       context: { client?: RemoteRenderClient };
+      private id: number;
 
       componentDidMount() {
         if (this.context.client) {
