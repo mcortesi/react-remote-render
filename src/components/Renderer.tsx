@@ -7,7 +7,7 @@ import { RemoteRenderComponent } from './withRemoteRender';
 export interface ComponentState {
   id: number;
   name: string;
-  props: Props
+  props: Props;
 }
 
 export interface RendererProps {
@@ -16,11 +16,14 @@ export interface RendererProps {
 }
 
 export interface RendererState {
-  instances: ComponentState[]
+  instances: ComponentState[];
 }
 
-export default class Renderer extends React.PureComponent<RendererProps, RendererState> {
-  state: RendererState = { instances: [] }
+export default class Renderer extends React.PureComponent<
+  RendererProps,
+  RendererState
+> {
+  state: RendererState = { instances: [] };
   private handler: RemoteRenderHandler;
 
   constructor(props: RendererProps) {
@@ -28,13 +31,13 @@ export default class Renderer extends React.PureComponent<RendererProps, Rendere
 
     this.handler = {
       onComponentMount: (id: number, name: string, props: Props) => {
-        this.setState((prevState) => ({
+        this.setState(prevState => ({
           instances: prevState.instances.concat([{ id, name, props }])
         }));
       },
 
       onUpdateComponent: (id: number, props: Props) => {
-        this.setState((prevState) => ({
+        this.setState(prevState => ({
           instances: prevState.instances.map(cState => {
             if (cState.id === id) {
               return { id, name: cState.name, props };
@@ -46,12 +49,11 @@ export default class Renderer extends React.PureComponent<RendererProps, Rendere
       },
 
       onUnmountComponent: (id: number) => {
-        this.setState((prevState) => ({
+        this.setState(prevState => ({
           instances: prevState.instances.filter(cState => cState.id !== id)
         }));
       }
     };
-
 
     this.props.server.registerHandler(this.handler);
   }
@@ -68,10 +70,17 @@ export default class Renderer extends React.PureComponent<RendererProps, Rendere
     return (
       <div>
         {this.state.instances.map(({ id, name, props }) => {
-          const ExternalizedComponent = this.getComponent(name) as RemoteRenderComponent<any>;
+          const ExternalizedComponent = this.getComponent(
+            name
+          ) as RemoteRenderComponent<any>;
           if (ExternalizedComponent) {
             const Component = ExternalizedComponent.WrappedComponent;
-            return <Component key={id} {...ExternalizedComponent.deserializeProps(props)} />
+            return (
+              <Component
+                key={id}
+                {...ExternalizedComponent.deserializeProps(props)}
+              />
+            );
           } else {
             return null;
           }
@@ -79,6 +88,4 @@ export default class Renderer extends React.PureComponent<RendererProps, Rendere
       </div>
     );
   }
-
-
 }

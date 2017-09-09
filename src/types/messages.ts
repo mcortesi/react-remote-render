@@ -2,7 +2,7 @@ export enum ClientMessageKind {
   Mount = 'Mount',
   Update = 'Update',
   Unmount = 'Unmount'
-};
+}
 
 export type ClientMessage = MountMessage | UpdateMessage | UnmountMessage;
 export type ServerMessage = FunctionCallMessage;
@@ -16,7 +16,7 @@ export interface FunctionCallMessage {
 export type PropsForTransport = {
   simpleProps: { [key: string]: any };
   functionProps: string[];
-}
+};
 
 export interface MountMessage {
   kind: ClientMessageKind.Mount;

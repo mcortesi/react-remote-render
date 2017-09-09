@@ -7,8 +7,8 @@ export interface RemoteRenderClient {
 }
 
 export interface RemoteRenderServer {
-  registerHandler(listener: RemoteRenderHandler)
-  unregisterHandler(listener: RemoteRenderHandler)
+  registerHandler(listener: RemoteRenderHandler);
+  unregisterHandler(listener: RemoteRenderHandler);
 }
 
 export interface RemoteRenderHandler {

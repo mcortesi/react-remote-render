@@ -9,14 +9,15 @@ export type CustomSerializers<T> = {
     serialize: (value: T[P]) => any;
     deserialize: (value: any) => T[P];
   }
-}
+};
 
 export type Options<Props> = {
   name?: string;
   customSerializers?: CustomSerializers<Props>;
-}
+};
 
-export type RemoteRenderComponent<OProps> = React.ComponentClass<OProps> & RemoteRenderComponentStatic<OProps>
+export type RemoteRenderComponent<OProps> = React.ComponentClass<OProps> &
+  RemoteRenderComponentStatic<OProps>;
 
 export interface RemoteRenderComponentStatic<Props> {
   WrappedComponent: React.ComponentType<Props>;
@@ -27,15 +28,15 @@ export interface RemoteRenderComponentStatic<Props> {
 
 const getDisplayName = Component => {
   if (typeof Component === 'string') {
-    return Component
+    return Component;
   }
 
   if (!Component) {
-    return undefined
+    return undefined;
   }
 
-  return Component.displayName || Component.name || 'Component'
-}
+  return Component.displayName || Component.name || 'Component';
+};
 
 /**
  * Creates an Remote Render Component.
@@ -49,26 +50,32 @@ const getDisplayName = Component => {
  *  * Since children prop is not serializable, is not supported. So, only works with component with no children prop.
  *
  */
-export default function withRemoteRender<OProps extends {}>(options: Options<OProps>): (Component: React.ComponentType<OProps>) => RemoteRenderComponent<OProps>  {
+export default function withRemoteRender<OProps extends {}>(
+  options: Options<OProps>
+): (Component: React.ComponentType<OProps>) => RemoteRenderComponent<OProps> {
+  const serializer =
+    options.customSerializers == null
+      ? p => p
+      : (props: OProps) =>
+          mapObject(props, (value, key) => {
+            if (options.customSerializers![key]) {
+              return options.customSerializers![key]!.serialize(value);
+            } else {
+              return value;
+            }
+          });
 
-  const serializer = options.customSerializers == null ? (p) => p :
-    (props: OProps) => mapObject(props, (value, key) => {
-      if (options.customSerializers![key]) {
-        return options.customSerializers![key]!.serialize(value);
-      } else {
-        return value;
-      }
-    })
-
-  const deserializer = options.customSerializers == null ? (p) => p :
-    (props) => mapObject(props, (value, key) => {
-      if (options.customSerializers![key]) {
-        return options.customSerializers![key]!.deserialize(value);
-      } else {
-        return value;
-      }
-    })
-
+  const deserializer =
+    options.customSerializers == null
+      ? p => p
+      : props =>
+          mapObject(props, (value, key) => {
+            if (options.customSerializers![key]) {
+              return options.customSerializers![key]!.deserialize(value);
+            } else {
+              return value;
+            }
+          });
 
   return (Component: React.ComponentType<OProps>) => {
     const externalName = (options.name || getDisplayName(Component)) as string;
@@ -77,24 +84,25 @@ export default function withRemoteRender<OProps extends {}>(options: Options<OPr
     }
 
     class ExternalizedComponent extends React.PureComponent<OProps> {
-
       static WrappedComponent = Component;
       static externalName = externalName;
 
       static serializeProps = serializer;
       static deserializeProps = deserializer;
 
-
       static contextTypes = {
         client: PropTypes.object
-      }
+      };
 
       private id: number;
       context: { client?: RemoteRenderClient };
 
       componentDidMount() {
         if (this.context.client) {
-          this.id = this.context.client.mountComponent(externalName, serializer(this.props));
+          this.id = this.context.client.mountComponent(
+            externalName,
+            serializer(this.props)
+          );
         }
       }
 
@@ -115,7 +123,9 @@ export default function withRemoteRender<OProps extends {}>(options: Options<OPr
       }
     }
 
-    (ExternalizedComponent as React.ComponentClass<OProps>).displayName = `Externalized(${getDisplayName(Component)})`;
+    (ExternalizedComponent as React.ComponentClass<
+      OProps
+    >).displayName = `Externalized(${getDisplayName(Component)})`;
 
     return ExternalizedComponent;
   };
