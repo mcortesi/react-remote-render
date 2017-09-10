@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
+import * as invariant from 'invariant';
 import { DefaultRemoteRenderClient } from '../model/default-service';
 import { RemoteRenderClient } from '../types/service';
 import { Transport } from '../types/transport';
@@ -27,11 +28,14 @@ export default class RemoteRenderProvider extends React.Component<
   constructor(props) {
     super(props);
 
-    if (this.props.client && this.props.transport) {
-      throw new Error("can't set transport & client props at the same time");
-    } else if (this.props.client == null && this.props.transport == null) {
-      throw new Error('At least a transport or a client prop must be given');
-    }
+    invariant(
+      !(this.props.client && this.props.transport),
+      "can't set transport & client props at the same time"
+    );
+    invariant(
+      this.props.client || this.props.transport,
+      'At least a transport or a client prop must be given'
+    );
 
     this.client = this.props.transport
       ? new DefaultRemoteRenderClient(this.props.transport)

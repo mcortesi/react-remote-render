@@ -13,6 +13,6 @@ export interface RemoteRenderServer {
 
 export interface RemoteRenderHandler {
   onComponentMount(id: number, name: string, props: Props);
-  onUpdateComponent(id: number, props: Props);
-  onUnmountComponent(id: number);
+  onComponentUpdate(id: number, props: Props);
+  onComponentUnmount(id: number);
 }

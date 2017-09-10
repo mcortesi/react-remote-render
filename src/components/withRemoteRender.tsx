@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
+import * as invariant from 'invariant';
 import { Shape } from '../types/base';
 import { RemoteRenderClient } from '../types/service';
 import { mapObject } from '../utils';
@@ -26,18 +27,6 @@ export interface RemoteRenderComponentStatic<Props> {
   deserializeProps: (props: Shape<Props, any>) => Props;
 }
 
-const getDisplayName = Component => {
-  if (typeof Component === 'string') {
-    return Component;
-  }
-
-  if (!Component) {
-    return undefined;
-  }
-
-  return Component.displayName || Component.name || 'Component';
-};
-
 /**
  * Creates an Remote Render Component.
  * This means the component won't render itself where it's mounted, but instead it will be rendered elsewhere in a <Renderer/>.
@@ -51,7 +40,7 @@ const getDisplayName = Component => {
  *
  */
 export default function withRemoteRender<OProps extends {}>(
-  options: Options<OProps>
+  options: Options<OProps> = {}
 ): (Component: React.ComponentType<OProps>) => RemoteRenderComponent<OProps> {
   const serializer =
     options.customSerializers == null
@@ -78,10 +67,11 @@ export default function withRemoteRender<OProps extends {}>(
           });
 
   return (Component: React.ComponentType<OProps>) => {
-    const externalName = (options.name || getDisplayName(Component)) as string;
-    if (externalName == null) {
-      throw new Error('Need an external name for externalized component');
-    }
+    const externalName = (options.name ||
+      Component.displayName ||
+      Component.name) as string;
+
+    invariant(externalName, 'Need an external name for externalized component');
 
     class ExternalizedComponent extends React.PureComponent<OProps> {
       static WrappedComponent = Component;
@@ -90,32 +80,35 @@ export default function withRemoteRender<OProps extends {}>(
       static serializeProps = serializer;
       static deserializeProps = deserializer;
 
-      static contextTypes = {
-        client: PropTypes.object
-      };
+      static contextTypes = { client: PropTypes.object };
 
-      context: { client?: RemoteRenderClient };
+      private client: RemoteRenderClient;
       private id: number;
 
+      constructor(props, context) {
+        super(props, context);
+
+        this.client = context.client;
+
+        invariant(
+          this.client,
+          "Could not find 'client' in context. Wrap the root component with <RemoteRenderProvider>"
+        );
+      }
+
       componentDidMount() {
-        if (this.context.client) {
-          this.id = this.context.client.mountComponent(
-            externalName,
-            serializer(this.props)
-          );
-        }
+        this.id = this.client.mountComponent(
+          externalName,
+          serializer(this.props)
+        );
       }
 
       componentDidUpdate() {
-        if (this.context.client) {
-          this.context.client.updateComponent(this.id, serializer(this.props));
-        }
+        this.client.updateComponent(this.id, serializer(this.props));
       }
 
       componentWillUnmount() {
-        if (this.context.client) {
-          this.context.client.unmountComponent(this.id);
-        }
+        this.client.unmountComponent(this.id);
       }
 
       render() {
@@ -125,7 +118,7 @@ export default function withRemoteRender<OProps extends {}>(
 
     (ExternalizedComponent as React.ComponentClass<
       OProps
-    >).displayName = `Externalized(${getDisplayName(Component)})`;
+    >).displayName = `Externalized(${externalName})`;
 
     return ExternalizedComponent;
   };

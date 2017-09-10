@@ -125,11 +125,11 @@ export class DefaultRemoteRenderServer implements RemoteRenderServer {
       }
       case ClientMessageKind.Update: {
         const parsedProps = this.processProps(msg.id, msg.props);
-        this.tellHandlers(h => h.onUpdateComponent(msg.id, parsedProps));
+        this.tellHandlers(h => h.onComponentUpdate(msg.id, parsedProps));
         break;
       }
       case ClientMessageKind.Unmount: {
-        this.tellHandlers(h => h.onUnmountComponent(msg.id));
+        this.tellHandlers(h => h.onComponentUnmount(msg.id));
         break;
       }
       default: {

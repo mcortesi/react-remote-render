@@ -10,6 +10,10 @@ export default class DummyRemoteRenderClient
   private handlers: RemoteRenderHandler[] = [];
   private nextId = 0;
 
+  hasHandlers() {
+    return this.handlers.length > 0;
+  }
+
   registerHandler(listener: RemoteRenderHandler) {
     this.handlers.push(listener);
   }
@@ -21,7 +25,6 @@ export default class DummyRemoteRenderClient
   mountComponent(name: string, props: Props): number {
     const id = this.nextId++;
     this.tellHandlers(h => {
-      console.log('sending onComponentMount to', id);
       h.onComponentMount(id, name, props);
     });
     return id;
@@ -29,15 +32,13 @@ export default class DummyRemoteRenderClient
 
   updateComponent(id: number, props: Props) {
     this.tellHandlers(h => {
-      console.log('sending onUpdateComponent to', id);
-      h.onUpdateComponent(id, props);
+      h.onComponentUpdate(id, props);
     });
   }
 
   unmountComponent(id: number) {
     this.tellHandlers(h => {
-      console.log('sending onUnmountComponent to', id);
-      h.onUnmountComponent(id);
+      h.onComponentUnmount(id);
     });
   }
 

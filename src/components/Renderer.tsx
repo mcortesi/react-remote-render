@@ -1,5 +1,8 @@
 import * as React from 'react';
+import * as invariant from 'invariant';
+import { DefaultRemoteRenderServer } from '../model/default-service';
 import { RemoteRenderServer, RemoteRenderHandler } from '../types/service';
+import { Transport } from '../types/transport';
 import { ObjMap } from '../types/base';
 import { Props } from '../types/base';
 import { RemoteRenderComponent } from './withRemoteRender';
@@ -12,7 +15,8 @@ export interface ComponentState {
 
 export interface RendererProps {
   components: RemoteRenderComponent<any>[];
-  server: RemoteRenderServer;
+  server?: RemoteRenderServer;
+  transport?: Transport;
 }
 
 export interface RendererState {
@@ -24,6 +28,7 @@ export default class Renderer extends React.PureComponent<
   RendererState
 > {
   state: RendererState = { instances: [] };
+  private server: RemoteRenderServer;
   private handler: RemoteRenderHandler;
 
   constructor(props: RendererProps) {
@@ -36,7 +41,7 @@ export default class Renderer extends React.PureComponent<
         }));
       },
 
-      onUpdateComponent: (id: number, props: Props) => {
+      onComponentUpdate: (id: number, props: Props) => {
         this.setState(prevState => ({
           instances: prevState.instances.map(cState => {
             if (cState.id === id) {
@@ -48,18 +53,29 @@ export default class Renderer extends React.PureComponent<
         }));
       },
 
-      onUnmountComponent: (id: number) => {
+      onComponentUnmount: (id: number) => {
         this.setState(prevState => ({
           instances: prevState.instances.filter(cState => cState.id !== id)
         }));
       }
     };
 
-    this.props.server.registerHandler(this.handler);
+    invariant(
+      !(props.server && props.transport),
+      "Can't set server & transport at the same time"
+    );
+    invariant(
+      props.server || props.transport,
+      'either server or transport is required'
+    );
+    this.server = props.transport
+      ? new DefaultRemoteRenderServer(props.transport)
+      : props.server as RemoteRenderServer;
+    this.server.registerHandler(this.handler);
   }
 
   componentWillUnmount() {
-    this.props.server.unregisterHandler(this.handler);
+    this.server.unregisterHandler(this.handler);
   }
 
   getComponent(name) {
