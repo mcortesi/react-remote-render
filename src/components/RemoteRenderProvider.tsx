@@ -39,7 +39,7 @@ export default class RemoteRenderProvider extends React.Component<
 
     this.client = this.props.transport
       ? new DefaultRemoteRenderClient(this.props.transport)
-      : this.props.client as RemoteRenderClient;
+      : this.props.client!;
   }
 
   getChildContext(): { client: RemoteRenderClient } {
