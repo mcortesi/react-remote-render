@@ -5,6 +5,12 @@ browser, wherever over the wire). 
 
 **It’s like a Portal, but more powerful.** A Portal can only render your component within the same browser window, or within the visibility scope of your running application.
 
+## Demo
+
+**Storybook**: https://mcortesi.github.io/react-remote-render/
+
+code in `stories/` folder
+
 ## Why?
 
 It’s not common, that’s true. And probably 90% of the times, you only need a portal. But there are some situations where you might need it.
