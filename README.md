@@ -11,6 +11,16 @@ browser, wherever over the wire). 
 
 code in `stories/` folder
 
+## Instalation
+
+With yarn:
+
+`yarn add react-remote-render`
+
+Or with npm:
+
+`npm install --save react-remote-render`
+
 ## Why?
 
 It’s not common, that’s true. And probably 90% of the times, you only need a portal. But there are some situations where you might need it.
@@ -174,4 +184,12 @@ class DummyTransport implements Transport {
 
 In a real app, `mimicTransport` would be replaced by an HTTP request or a `window.postMessage()` call.
 
+## Contributing
 
+Common tasks:
+
+ * Building: `yarn build`
+ * Run tests: `yarn test` or `yarn test:watch` for watch mode
+ * Run linter: `yarn lint`
+ * Run test & lint w/coverage: `yarn test:prod`
+ * Run storybook (examples here) `yarn storybook`
